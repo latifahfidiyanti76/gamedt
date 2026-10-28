@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lomba Berenang - Procedure Text</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #e0f7fa;
+  margin: 0;
+  color: #123;
+}
+
+header {
+  background: #0277bd;
+  color: white;
+  padding: 20px;
+}
+
+.pool {
+  max-width: 900px;
+  margin: 20px auto;
+  background: #29b6f6;
+  border: 5px solid white;
+  border-radius: 12px;
+}
+
+.lane {
+  height: 85px;
+  border-bottom: 3px dashed white;
+  position: relative;
+  overflow: hidden;
+}
+
+.lane:last-child { border-bottom: none; }
+
+.label {
+  position: absolute;
+  left: 8px;
+  top: 5px;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.swimmer {
+  position: absolute;
+  left: 3%;
+  top: 25px;
+  font-size: 32px;
+  transition: left 0.7s, top 0.7s;
+}
+
+.finish {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  height: 100%;
+  border-left: 5px solid white;
+}
+
+.panel {
+  background: white;
+  max-width: 650px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+#question {
+  font-size: 19px;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+#options {
+  display: grid;
+  gap: 10px;
+}
+
+.option {
+  padding: 12px;
+  border: 2px solid #0288d1;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #e1f5fe;
+  text-align: left;
+  font-size: 15px;
+}
+
+.option:hover { background: #b3e5fc; }
+.option:disabled { cursor: default; }
+
+button.action {
+  margin: 8px;
+  padding: 12px 20px;
+  background: #0277bd;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.scoreboard {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px;
+}
+
+.score {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+#feedback {
+  font-weight: bold;
+  margin: 15px;
+  min-height: 24px;
+}
+
+@media (max-width: 600px) {
+  .panel { margin: 12px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🏊 LOMBA BERENANG 🏊</h1>
+  <p>Bahasa Inggris: Procedure Text</p>
+</header>
+
+<h3 id="turnInfo">Siap untuk berlomba?</h3>
+
+<div class="pool">
+  <div class="lane">
+    <div class="label">TIM ATAS 1</div>
+    <div class="swimmer" id="swimmer0">🏊</div>
+    <div class="finish"></div>
+  </div>
+  <div class="lane">
+    <div class="label">TIM ATAS 2</div>
+    <div class="swimmer" id="swimmer1">🏊</div>
+    <div class="finish"></div>
+  </div>
+  <div class="lane">
+    <div class="label">TIM BAWAH 1</div>
+    <div class="swimmer" id="swimmer2">🏊</div>
+    <div class="finish"></div>
+  </div>
+  <div class="lane">
+    <div class="label">TIM BAWAH 2</div>
+    <div class="swimmer" id="swimmer3">🏊</div>
+    <div class="finish"></div>
+  </div>
+</div>
+
+<div class="scoreboard" id="scoreboard"></div>
+
+<div class="panel">
+  <h3 id="topic">Materi: Procedure Text</h3>
+  <div id="question">Klik Mulai Game untuk bermain.</div>
+  <div id="options"></div>
+  <div id="feedback"></div>
+
+  <button class="action" id="startBtn" onclick="startGame()">
+    Mulai Game
+  </button>
+
+  <button class="action" id="nextBtn" onclick="nextTurn()" hidden>
+    Soal Berikutnya
+  </button>
+
+  <button class="action" onclick="resetGame()">
+    Ulangi Game
+  </button>
+</div>
+
+<script>
+const questions = [
+  {
+    topic: "Pengertian Procedure Text",
+    q: "What is the purpose of a procedure text?",
+    a: [
+      "To describe a person",
+      "To explain how to do something",
+      "To tell a past experience",
+      "To entertain the reader"
+    ],
+    correct: 1
+  },
+  {
+    topic: "Struktur Procedure Text",
+    q: "What are the main parts of a procedure text?",
+    a: [
+      "Orientation, complication, resolution",
+      "Goal, materials, steps",
+      "Identification, description, conclusion",
+      "Thesis, arguments, reiteration"
+    ],
+    correct: 1
+  },
+  {
+    topic: "Imperative Sentence",
+    q: "Which sentence is an imperative sentence?",
+    a: [
+      "She is swimming.",
+      "Do you like swimming?",
+      "Wash your hands!",
+      "He washed his hands."
+    ],
+    correct: 2
+  },
+  {
+    topic: "Sequence Words",
+    q: "Which word is commonly used to show the first step?",
+    a: ["Finally", "First", "Because", "Although"],
+    correct: 1
+  },
+  {
+    topic: "Materials",
+    q: "What does 'materials' mean in a recipe?",
+    a: [
+      "The ingredients needed",
+      "The final result",
+      "The writer's opinion",
+      "The story setting"
+    ],
+    correct: 0
+  },
+  {
+    topic: "Action Verbs",
+    q: "Which word is an action verb?",
+    a: ["Beautiful", "Carefully", "Cut", "Blue"],
+    correct: 2
+  },
+  {
+    topic: "Making Tea",
+    q: "What should you do first when making tea?",
+    a: [
+      "Drink the tea",
+      "Prepare the ingredients",
+      "Throw away the cup",
+      "Wash the tea away"
+    ],
+    correct: 1
+  },
+  {
+    topic: "Sequence Words",
+    q: "Which word is suitable to end a procedure?",
+    a: ["First", "Next", "Then", "Finally"],
+    correct: 3
+  },
+  {
+    topic: "Language Features",
+    q: "Which tense is commonly used in procedure text?",
+    a: [
+      "Simple present tense",
+      "Simple past tense",
+      "Past continuous tense",
+      "Past perfect tense"
+    ],
+    correct: 0
+  },
+  {
+    topic: "Washing Hands",
+    q: "After applying soap, what should you do?",
+    a: [
+      "Dry your hands immediately",
+      "Rinse your hands with water",
+      "Add more dirt",
+      "Stop washing"
+    ],
+    correct: 1
+  }
+];
+
+// Empat tim: dua tim atas dan dua tim bawah.
+const teams = [
+  { name: "Tim Atas 1", position: 0, score: 0, asked: 0 },
+  { name: "Tim Atas 2", position: 0, score: 0, asked: 0 },
+  { name: "Tim Bawah 1", position: 0, score: 0, asked: 0 },
+  { name: "Tim Bawah 2", position: 0, score: 0, asked: 0 }
+];
+
+let order = [];
+let turn = 0;
+let answered = false;
+let running = false;
+let currentQuestion;
+
+function createOrder() {
+  order = [];
+
+  // Bergantian: atas 1, bawah 1, atas 2, bawah 2.
+  for (let i = 0; i < 10; i++) {
+    order.push(0, 2, 1, 3);
+  }
+}
+
+function startGame() {
+  if (running) return;
+
+  running = true;
+  document.getElementById("startBtn").hidden = true;
+
+  createOrder();
+  showQuestion();
+}
+
+function showQuestion() {
+  if (turn >= order.length) {
+    finishGame();
+    return;
+  }
+
+  answered = false;
+
+  const teamIndex = order[turn];
+  const team = teams[teamIndex];
+
+  currentQuestion = questions[team.asked];
+
+  document.getElementById("turnInfo").textContent =
+    "Giliran " + team.name +
+    " | Soal " + (team.asked + 1) + " dari 10";
+
+  document.getElementById("topic").textContent =
+    "Topik: " + currentQuestion.topic;
+
+  document.getElementById("question").textContent =
+    currentQuestion.q;
+
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("nextBtn").hidden = true;
+
+  const options = document.getElementById("options");
+  options.innerHTML = "";
+
+  currentQuestion.a.forEach((answer, index) => {
+    const button = document.createElement("button");
+    button.className = "option";
+    button.textContent =
+      String.fromCharCode(65 + index) + ". " + answer;
+
+    button.onclick = () => checkAnswer(index, teamIndex);
+    options.appendChild(button);
+  });
+}
+
+function checkAnswer(choice, teamIndex) {
+  if (answered) return;
+  answered = true;
+
+  const team = teams[teamIndex];
+  const correct = choice === currentQuestion.correct;
+  const buttons = document.querySelectorAll(".option");
+
+  buttons.forEach((button, index) => {
+    button.disabled = true;
+
+    if (index === currentQuestion.correct) {
+      button.style.background = "#a5d6a7";
+    }
+
+    if (index === choice && !correct) {
+      button.style.background = "#ef9a9a";
+    }
+  });
+
+  team.asked++;
+
+  const swimmer = document.getElementById("swimmer" + teamIndex);
+
+  if (correct) {
+    team.score++;
+    team.position = Math.min(team.position + 1, 10);
+
+    swimmer.textContent = "🏊";
+    swimmer.style.top = "25px";
+
+    document.getElementById("feedback").textContent =
+      "✅ Benar! " + team.name + " maju ke depan!";
+  } else {
+    team.position = Math.max(team.position - 1, 0);
+
+    swimmer.textContent = "🤿";
+    swimmer.style.top = "45px";
+
+    document.getElementById("feedback").textContent =
+      "❌ Salah! " + team.name + " tenggelam sementara.";
+  }
+
+  // Posisi bergerak maju jika benar dan mundur jika salah.
+  swimmer.style.left = (3 + team.position * 8.5) + "%";
+
+  updateScoreboard();
+
+  document.getElementById("nextBtn").hidden = false;
+  document.getElementById("nextBtn").textContent =
+    turn === order.length - 1 ? "Lihat Hasil" : "Soal Berikutnya →";
+}
+
+function nextTurn() {
+  if (!answered) return;
+
+  turn++;
+  showQuestion();
+}
+
+function updateScoreboard() {
+  const board = document.getElementById("scoreboard");
+  board.innerHTML = "";
+
+  teams.forEach(team => {
+    const card = document.createElement("div");
+    card.className = "score";
+
+    card.innerHTML =
+      "<strong>" + team.name + "</strong><br>" +
+      "Skor: " + team.score + " / 10<br>" +
+      "Soal: " + team.asked + " / 10";
+
+    board.appendChild(card);
+  });
+}
+
+function finishGame() {
+  running = false;
+
+  document.getElementById("options").innerHTML = "";
+  document.getElementById("nextBtn").hidden = true;
+  document.getElementById("turnInfo").textContent =
+    "🏁 PERLOMBAAN SELESAI!";
+
+  document.getElementById("topic").textContent = "Hasil Akhir";
+  document.getElementById("question").textContent =
+    "Semua tim telah menjawab 10 soal.";
+
+  const highest = Math.max(...teams.map(team => team.score));
+  const winners = teams
+    .filter(team => team.score === highest)
+    .map(team => team.name);
+
+  document.getElementById("feedback").textContent =
+    "🏆 Pemenang: " + winners.join(" dan ") +
+    " dengan " + highest + " jawaban benar!";
+
+  document.getElementById("startBtn").hidden = false;
+  document.getElementById("startBtn").textContent = "Main Lagi";
+}
+
+function resetGame() {
+  turn = 0;
+  running = false;
+  answered = false;
+  order = [];
+
+  teams.forEach((team, index) => {
+    team.position = 0;
+    team.score = 0;
+    team.asked = 0;
+
+    const swimmer = document.getElementById("swimmer" + index);
+    swimmer.style.left = "3%";
+    swimmer.style.top = "25px";
+    swimmer.textContent = "🏊";
+  });
+
+  document.getElementById("turnInfo").textContent =
+    "Siap untuk berlomba?";
+  document.getElementById("topic").textContent =
+    "Materi: Procedure Text";
+  document.getElementById("question").textContent =
+    "Klik Mulai Game untuk bermain.";
+  document.getElementById("options").innerHTML = "";
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("startBtn").hidden = false;
+  document.getElementById("startBtn").textContent = "Mulai Game";
+  document.getElementById("nextBtn").hidden = true;
+
+  updateScoreboard();
+}
+
+updateScoreboard();
+</script>
+
+</body>
+</html>
